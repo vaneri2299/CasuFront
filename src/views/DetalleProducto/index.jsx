@@ -8,7 +8,6 @@ import {
   Rating,
   Stack,
   Tab,
-  Tabs,
   TextField,
   Typography,
   Button,
@@ -18,7 +17,6 @@ import { NavLink } from "react-router-dom";
 import NavigateNextIcon from "@mui/icons-material/NavigateNext";
 import "./styles.css";
 import { Box } from "@mui/system";
-import PropTypes from "prop-types";
 import TabList from "@mui/lab/TabList";
 import TabPanel from "@mui/lab/TabPanel";
 import TabContext from "@mui/lab/TabContext";
