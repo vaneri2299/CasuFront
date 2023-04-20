@@ -6,6 +6,7 @@ import shop1 from "../../assets/shop1.png";
 import shop2 from "../../assets/shop2.png";
 import shop3 from "../../assets/shop3.png";
 import novedades from "../../assets/novedades.png";
+import insta from "../../assets/insta2.jpg";
 import { Button } from "react-bootstrap";
 
 const Home = () => {
@@ -19,12 +20,17 @@ const Home = () => {
             justifyContent: "center",
             alignItems: "center",
             padding: "100px 0px",
+            backgroundColor: "#fbebb5",
+            marginTop: "80px",
           }}
         >
           <Grid item xs={12} md={6}>
             <Typography
               variant="h5"
-              style={{ fontWeight: "bold", textAlign: "justify" }}
+              style={{
+                fontWeight: "bold",
+                textAlign: "justify",
+              }}
             >
               Ponte en contacto con la naturaleza. Adorna tus espacios con la
               belleza de nuestros cactus y suculentas.
@@ -100,15 +106,34 @@ const Home = () => {
           style={{
             justifyContent: "space-around",
             alignItems: "center",
-            padding: "20px 0px",
+            // padding: "20px 0px",
             backgroundColor: "#FAF4F4",
             textAlign: "center",
+            // display: "flex",
           }}
         >
-          <Grid item xs={12} md={12}>
-            <Stack spacing={3} justifyContent="center">
+          <Grid
+            item
+            xs={12}
+            md={12}
+            style={{
+              minHeight: "50vh",
+              backgroundImage: `url(${insta})`,
+              backgroundSize: "cover",
+              backgroundRepeat: "no-repeat",
+              backgroundPosition: "center",
+              alignItems: "center",
+              // filter: "brightness(0.7)",
+              color: "white",
+            }}
+          >
+            <Stack
+              spacing={3}
+              justifyContent="center"
+              style={{ marginTop: "4%" }}
+            >
               <Typography variant="h3" style={{ fontWeight: "bold" }}>
-                Novedades
+                Conecta con nosotros
               </Typography>
               <Typography variant="body" style={{ fontWeight: "bold" }}>
                 Siguenos en Instagram
