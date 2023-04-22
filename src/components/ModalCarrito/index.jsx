@@ -26,17 +26,12 @@ const style = {
   p: 3,
 };
 
-export default function ModalCarrito() {
-  const [open, setOpen] = useState(false);
-  const handleOpen = () => setOpen(true);
-  const handleClose = () => setOpen(false);
-
+export default function ModalCarrito(props) {
   return (
-    <div style={{ marginTop: "100px" }}>
-      <Button onClick={handleOpen}>Open modal</Button>
+    <div>
       <Modal
-        open={open}
-        onClose={handleClose}
+        open={props.isOpen}
+        onClose={props.closeModal}
         aria-labelledby="modal-modal-title"
         aria-describedby="modal-modal-description"
         sx={{ border: "none", overflow: "auto" }}
@@ -49,7 +44,7 @@ export default function ModalCarrito() {
             <Typography id="modal-modal-title" variant="h5" component="h2">
               Carrito
             </Typography>
-            <IconButton>
+            <IconButton onClick={props.closeModal}>
               <CloseIcon />
             </IconButton>
           </Stack>
@@ -132,10 +127,7 @@ export default function ModalCarrito() {
                 color="black"
                 style={{ marginBottom: "16px" }}
               />
-              <Stack
-                direction="row"
-                style={{ justifyContent: "space-evenly" }}
-              >
+              <Stack direction="row" style={{ justifyContent: "space-evenly" }}>
                 <Button
                   variant="outlined"
                   color="primary"

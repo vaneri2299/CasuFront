@@ -6,6 +6,8 @@ import {
   MDBCol,
   MDBIcon,
 } from "mdb-react-ui-kit";
+import { NavLink } from "react-router-dom";
+import { Link } from "@mui/material";
 
 const Footer = () => {
   return (
@@ -27,38 +29,50 @@ const Footer = () => {
             <MDBCol md="2" lg="2" xl="2" className="mx-auto mb-4">
               <h6 className="text-uppercase fw-bold mb-4">Links</h6>
               <p>
-                <a href="#!" className="text-reset">
+                <Link className="text-reset" component={NavLink} to="/">
                   Inicio
-                </a>
+                </Link>
               </p>
               <p>
-                <a href="#!" className="text-reset">
+                <Link component={NavLink} to="/comprar" className="text-reset">
                   Comprar
-                </a>
+                </Link>
               </p>
               <p>
-                <a href="#!" className="text-reset">
+                <Link
+                  component={NavLink}
+                  to="/sobre_nosotros"
+                  className="text-reset"
+                >
                   Sobre nosotros
-                </a>
+                </Link>
               </p>
               <p>
-                <a href="#!" className="text-reset">
+                <Link component={NavLink} to="/perfil" className="text-reset">
                   Cuenta
-                </a>
+                </Link>
               </p>
             </MDBCol>
 
             <MDBCol md="3" lg="2" xl="2" className="mx-auto mb-4">
               <h6 className="text-uppercase fw-bold mb-4">Ayuda</h6>
               <p>
-                <a href="#!" className="text-reset">
+                <Link
+                  component={NavLink}
+                  to="/metodos_pago"
+                  className="text-reset"
+                >
                   Métodos de pago
-                </a>
+                </Link>
               </p>
               <p>
-                <a href="#!" className="text-reset">
+                <Link
+                  component={NavLink}
+                  to="/politica_privacidad"
+                  className="text-reset"
+                >
                   Política de privacidad
-                </a>
+                </Link>
               </p>
               <p></p>
             </MDBCol>
@@ -82,9 +96,9 @@ const Footer = () => {
         style={{ backgroundColor: "rgba(0, 0, 0, 0.05)" }}
       >
         © 2023 Copyright:&nbsp;
-        <a className="text-reset fw-bold" href="https://mdbootstrap.com/">
+        <Link className="text-reset fw-bold" component={NavLink} to="/">
           casu.com
-        </a>
+        </Link>
       </div>
     </MDBFooter>
   );

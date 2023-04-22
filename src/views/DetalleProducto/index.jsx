@@ -164,7 +164,7 @@ const DetalleProducto = () => {
             <TabList
               onChange={handleChange}
               aria-label="lab API tabs example"
-              textColor="inherit"
+              textColor="primary"
               indicatorColor="primary"
               sx={{
                 "& .MuiTabs-flexContainer": {
@@ -172,7 +172,7 @@ const DetalleProducto = () => {
                 },
               }}
             >
-              <Tab label="Descripción" value="1" />
+              <Tab label="Información adicional" value="1" />
               {/* <Tab label="Reseñas" value="2" /> */}
             </TabList>
           </Box>
