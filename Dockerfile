@@ -1,7 +1,7 @@
 FROM node:17.4.0
 WORKDIR /app
-COPY ./build ./build
 COPY package*.json ./
-RUN npm install --production
-EXPOSE $PORT
+RUN npm install
+COPY . .
+EXPOSE 3000
 CMD ["npm", "run", "dev"]
