@@ -1,0 +1,4 @@
+name: casufront
+type: web
+buildCommand: npm run build
+startCommand: npm run start
