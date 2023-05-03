@@ -119,12 +119,12 @@ const Comprar = () => {
         <Typography variant="h3" style={{ paddingTop: "48px" }}>
           &#x1F335;
         </Typography>
-        <Typography variant="h3">Comprar</Typography>
+        <Typography variant="h3">Productos</Typography>
         <Breadcrumbs aria-label="breadcrumb">
           <Link color="inherit" component={NavLink} to="/">
             Inicio
           </Link>
-          <Typography color="textPrimary">Comprar</Typography>
+          <Typography color="textPrimary">Productos</Typography>
         </Breadcrumbs>
       </Paper>
 

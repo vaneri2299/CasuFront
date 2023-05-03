@@ -4,6 +4,7 @@ import Home from "../views/Home";
 import Comprar from "../views/Comprar";
 import DetalleProducto from "../views/DetalleProducto";
 import Cuenta from "../views/Cuenta";
+import Checkout from "../views/Checkout";
 
 export const router = createBrowserRouter([
   {
@@ -15,16 +16,20 @@ export const router = createBrowserRouter([
         element: <Home />,
       },
       {
-        path: "/comprar",
+        path: "/productos",
         element: <Comprar />,
       },
       {
-        path: "/comprar/:id",
+        path: "/productos/:id",
         element: <DetalleProducto />,
       },
       {
         path: "/cuenta",
         element: <Cuenta />,
+      },
+      {
+        path: "/checkout",
+        element: <Checkout />,
       },
     ],
   },

@@ -10,9 +10,11 @@ import {
   Grid,
   IconButton,
   Stack,
+  TextField,
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import HighlightOffIcon from "@mui/icons-material/HighlightOff";
+import { NavLink } from "react-router-dom";
 
 const style = {
   position: "absolute",
@@ -70,8 +72,16 @@ export default function ModalCarrito(props) {
               <Typography color="textPrimary" variant="h6">
                 Producto 1
               </Typography>
-              <Stack direction="row" spacing={2}>
-                <Typography variant="h6">1</Typography>
+              <Stack direction="row" spacing={2} alignItems="center">
+                <div class="form-outline">
+                  <input
+                    type="number"
+                    id="form1"
+                    class="form-control form-icon-trailing"
+                    fontWeight="bold"
+                    style={{ fontWeight: "bold", width: "80px" }}
+                  />
+                </div>
                 <Typography variant="h6">x</Typography>
                 <Typography color="#B88E2F" variant="h6">
                   $19.99
@@ -99,8 +109,16 @@ export default function ModalCarrito(props) {
               <Typography color="textPrimary" variant="h6">
                 Producto 2
               </Typography>
-              <Stack direction="row" spacing={2}>
-                <Typography variant="h6">1</Typography>
+              <Stack direction="row" spacing={2} alignItems="center">
+                <div class="form-outline">
+                  <input
+                    type="number"
+                    id="form1"
+                    class="form-control form-icon-trailing"
+                    fontWeight="bold"
+                    style={{ fontWeight: "bold", width: "80px" }}
+                  />
+                </div>
                 <Typography variant="h6">x</Typography>
                 <Typography color="#B88E2F" variant="h6">
                   $19.99
@@ -139,7 +157,9 @@ export default function ModalCarrito(props) {
                 <Button
                   variant="outlined"
                   color="primary"
-                  //   onClick={"handleAgregar"}
+                  component={NavLink}
+                  to={"/checkout"}
+                  onClick={props.closeModal}
                   size="small"
                 >
                   Checkout

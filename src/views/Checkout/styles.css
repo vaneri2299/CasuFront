@@ -1,0 +1,6 @@
+/* Mostrar las flechas para aumentar o disminuir el número */
+input[type=number]::-webkit-inner-spin-button, 
+input[type=number]::-webkit-outer-spin-button { 
+  -webkit-appearance: inner-spin-button; 
+  margin: 0; 
+}

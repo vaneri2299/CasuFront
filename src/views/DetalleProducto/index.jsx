@@ -42,8 +42,8 @@ const DetalleProducto = () => {
         <Link color="inherit" component={NavLink} to="/">
           Inicio
         </Link>
-        <Link color="inherit" component={NavLink} to="/comprar">
-          Comprar
+        <Link color="inherit" component={NavLink} to="/productos">
+          Productos
         </Link>
         <Typography color="textPrimary">Producto 1</Typography>
       </Breadcrumbs>

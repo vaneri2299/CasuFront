@@ -34,8 +34,8 @@ const Footer = () => {
                 </Link>
               </p>
               <p>
-                <Link component={NavLink} to="/comprar" className="text-reset">
-                  Comprar
+                <Link component={NavLink} to="/productos" className="text-reset">
+                  Productos
                 </Link>
               </p>
               <p>

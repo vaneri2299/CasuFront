@@ -61,8 +61,8 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
   },
 }));
 
-const pages = ["Inicio", "Comprar", "Sobre nosotros"];
-const rutas = ["/", "comprar", "sobre_nosotros"];
+const pages = ["Inicio", "Productos", "Sobre nosotros"];
+const rutas = ["/", "productos", "sobre_nosotros"];
 
 export default function PrimarySearchAppBar() {
   const [anchorEl, setAnchorEl] = useState(null);
