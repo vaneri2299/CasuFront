@@ -9,12 +9,24 @@ import {
   Grid,
   Stack,
   Divider,
+  Select,
+  MenuItem,
+  InputLabel,
+  Button,
+  FormControl,
+  TextField,
 } from "@mui/material";
 import "./styles.css";
 
 const Checkout = () => {
   const location = useLocation();
   const currentUrl = location.pathname;
+
+  const [selectedValue, setSelectedValue] = useState("");
+  const options = [
+    { value: 0, label: "Tarjeta de Crédito" },
+    { value: 1, label: "Criptomonedas" },
+  ];
 
   return (
     <>
@@ -49,15 +61,89 @@ const Checkout = () => {
         component="h1"
         variant="h5"
         paddingInline={4}
+        marginBottom={2}
       >
         Detalles de Facturación
       </Typography>
-      <Grid container justifyContent="center" marginBottom={5}>
-        <Grid container item md={4} xs={12}>
+      <Grid container marginBottom={5} justifyContent="space-around">
+        <Grid container item md={6} xs={12} spacing={1}>
+          <Grid item md={6}>
+            <FormControl fullWidth size="small">
+              <InputLabel
+                id="my-select-label"
+                style={{
+                  display: "flex",
+                  alignItems: "left",
+                  justifyContent: "left",
+                }}
+              >
+                Selecciona un método de pago
+              </InputLabel>
+              <Select
+                size="small"
+                variant="outlined"
+                labelId="my-select-label"
+                label="Selecciona un método de pago"
+                value={selectedValue}
+                onChange={(event) => setSelectedValue(event.target.value)}
+              >
+                {options.map((option) => (
+                  <MenuItem key={option.value} value={option.value}>
+                    {option.label}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+          </Grid>
+          <Grid item md={12} mt={3}>
+            <InputLabel id="my-select-label2">
+              Complete el siguiente formulario
+            </InputLabel>
+          </Grid>
+          <Grid item md={6}>
+            <TextField
+              fullWidth
+              id="outlined-email-input"
+              label="Correo electrónico"
+              type="email"
+              size="small"
+              variant="outlined"
+              // autoComplete="current-password"
+            />
+          </Grid>
+          <Grid item md={3}>
+            <TextField
+              fullWidth
+              id="outlined-pin-input"
+              label="Pin"
+              type="password"
+              size="small"
+              variant="outlined"
+              // autoComplete="current-password"
+            />
+          </Grid>
+          <Grid item md={3}>
+            <TextField
+              fullWidth
+              id="outlined-disabled"
+              label="Monto"
+              type="number"
+              size="small"
+              variant="outlined"
+              disabled
+              defaultValue={39.98}
+              // autoComplete="current-password"
+            />
+          </Grid>
           <Grid item md={12}>
-            <Typography color="textPrimary" component="h1" variant="h5">
-              Productos
-            </Typography>
+            <Button
+              variant="contained"
+              color="primary"
+              //   onClick={"handleAgregar"}
+              size="small"
+            >
+              Finalizar compra
+            </Button>
           </Grid>
         </Grid>
         <Grid container item md={4} xs={12} justifyContent="space-between">
