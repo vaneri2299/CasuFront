@@ -92,10 +92,15 @@ export default function PrimarySearchAppBar() {
     setAnchorEl(null);
     handleMobileMenuClose();
   };
-
+  
   const handleMobileMenuOpen = (event) => {
     setMobileMoreAnchorEl(event.currentTarget);
   };
+  
+  const cerrarSesion = () => {
+    localStorage.removeItem('casuToken');
+    location.reload();
+  }
 
   const menuId = "primary-search-account-menu";
   const renderMenu = (
@@ -113,11 +118,9 @@ export default function PrimarySearchAppBar() {
       }}
       open={isMenuOpen}
       onClose={handleMenuClose}
+      variant="selectedMenu"
     >
-      <MenuItem onClick={handleMenuClose}>Profileee</MenuItem>
-      <MenuItem component={NavLink} to={"/cuenta"}>
-        Mi cuenta
-      </MenuItem>
+      <MenuItem onClick={cerrarSesion}>Cerrar sesión</MenuItem>
     </Menu>
   );
 

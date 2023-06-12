@@ -13,7 +13,7 @@ import {
   Button,
   Card,
 } from "@mui/material";
-import { NavLink, useParams } from "react-router-dom";
+import { Navigate, NavLink, useNavigate, useParams } from "react-router-dom";
 import NavigateNextIcon from "@mui/icons-material/NavigateNext";
 import "./styles.css";
 import { Box } from "@mui/system";
@@ -21,13 +21,22 @@ import TabList from "@mui/lab/TabList";
 import TabPanel from "@mui/lab/TabPanel";
 import TabContext from "@mui/lab/TabContext";
 import { getProducto } from "../../api/product";
+import NotificacionContainer from "../../components/NotificacionContainer";
+import { toast } from "react-toastify";
+import { useDispatch, useSelector } from "react-redux";
+import { setCantCarrito } from "../../state/actions";
 
 const DetalleProducto = () => {
   const params = useParams();
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
 
+  const isLoged = useSelector((state) => state.isLoged);
   const [producto, setProducto] = useState();
+  const [productosList, setProductosList] = useState();
   const [cantidadProducto, setCantidadProducto] = useState(0);
   const [value, setValue] = useState("1");
+  const [blockCarrito, setBlockCarrito] = useState(false);
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
@@ -43,9 +52,85 @@ const DetalleProducto = () => {
         console.log(error);
       }
     };
-
+    const existingProducts =
+      JSON.parse(localStorage.getItem("productsCasu")) || [];
+    setProductosList(existingProducts);
     cargarProducto();
   }, []);
+
+  const actualizarCantidad = (e) => {
+    const newQuantity = parseInt(e.target.value);
+    if (newQuantity > producto?.cantidad) {
+      setBlockCarrito(true);
+      toast.error("La cantidad ingresada supera el stock disponible");
+    } else if (newQuantity < 0) {
+      setBlockCarrito(true);
+      toast.error("La cantidad ingresada no puede ser negativo");
+    } else {
+      setBlockCarrito(false);
+    }
+    setCantidadProducto(newQuantity);
+    console.log("adasd");
+    console.log(cantidadProducto);
+  };
+
+  const addCarrito = () => {
+    if (!isLoged) {
+      toast.info("Inicia sesión para agregar productos al carrito");
+      setTimeout(() => {
+        navigate("/cuenta");
+      }, 1500);
+      return;
+    }
+    const id = params.id;
+    const existingProductIndex = productosList.findIndex(
+      (product) => product.id === id
+    );
+
+    if (existingProductIndex === -1) {
+      // El producto no existe en la lista de productos, así que lo añadimos.
+      const newProduct = {
+        name: producto.nombre,
+        price: producto.precio,
+        imageUrl: producto.imagen,
+        id: id,
+        quantity: cantidadProducto,
+      };
+      setProductosList([...productosList, newProduct]);
+    } else {
+      // El producto ya existe en la lista de productos, así que actualizamos su cantidad.
+      const updatedProducts = productosList.map((product, index) => {
+        if (index === existingProductIndex) {
+          return {
+            ...product,
+            quantity: cantidadProducto,
+          };
+        }
+        return product;
+      });
+      setProductosList(updatedProducts);
+    }
+  };
+
+  useEffect(() => {
+    productosList !== undefined
+      ? localStorage.setItem("productsCasu", JSON.stringify(productosList))
+      : null;
+    let total = 0;
+    const existingProductsString = localStorage.getItem("productsCasu");
+    const existingProducts = existingProductsString
+      ? JSON.parse(existingProductsString)
+      : [];
+    existingProducts.forEach((producto) => {
+      total += producto["quantity"];
+    });
+    dispatch(setCantCarrito(total));
+  }, [productosList]);
+
+  const handleFocus = (event) => {
+    const value = event.target.value.replace(/^0+/, "") || "0";
+    setCantidadProducto(Number(value));
+  };
 
   return (
     <div style={{ marginTop: "80px", marginInline: "16px" }}>
@@ -118,7 +203,7 @@ const DetalleProducto = () => {
               className="Detalle"
               style={{ width: "200px" }}
               value={cantidadProducto}
-              onChange={(e) => setCantidadProducto(Number(e.target.value))}
+              onChange={(e) => actualizarCantidad(e)}
               InputProps={{
                 startAdornment: (
                   <Button
@@ -133,6 +218,7 @@ const DetalleProducto = () => {
                 ),
                 endAdornment: (
                   <Button
+                    disabled={cantidadProducto >= producto?.cantidad}
                     variant="text"
                     size="small"
                     sx={{ padding: 0 }}
@@ -141,12 +227,16 @@ const DetalleProducto = () => {
                     +
                   </Button>
                 ),
+                min: 0,
+                pattern: "d+",
               }}
+              onFocus={handleFocus}
             />
             <Button
               variant="contained"
               color="primary"
-              //   onClick={"handleAgregar"}
+              onClick={addCarrito}
+              disabled={blockCarrito}
               size="small"
             >
               Añadir al carrito
@@ -206,13 +296,15 @@ const DetalleProducto = () => {
           <TabPanel value="1">
             <>
               <Typography variant="body1" component="p">
-              {producto?.informacion || "Este producto no tiene información adicional"}
+                {producto?.informacion ||
+                  "Este producto no tiene información adicional"}
               </Typography>
             </>
           </TabPanel>
           {/* <TabPanel value="2">Item Two</TabPanel> */}
         </TabContext>
       </Box>
+      <NotificacionContainer />
     </div>
   );
 };

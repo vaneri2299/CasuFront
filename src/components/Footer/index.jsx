@@ -47,11 +47,6 @@ const Footer = () => {
                   Sobre nosotros
                 </Link>
               </p>
-              <p>
-                <Link component={NavLink} to="/perfil" className="text-reset">
-                  Cuenta
-                </Link>
-              </p>
             </MDBCol>
 
             <MDBCol md="3" lg="2" xl="2" className="mx-auto mb-4">

@@ -1,5 +1,9 @@
 import React, { useState } from "react";
-import { NavLink, redirect, useLocation, Navigate, useNavigate  } from "react-router-dom";
+import {
+  NavLink,
+  useLocation,
+  useNavigate,
+} from "react-router-dom";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import banner from "../../assets/cuenta.jpg";
@@ -199,7 +203,14 @@ const Cuenta = () => {
     }
   };
 
+  const handleKeyPress = (event) => {
+    if (event.key === "Enter") {
+      iniciarSesion();
+    }
+  };
+
   const iniciarSesion = async () => {
+    setIsLoading2(true);
     try {
       const response = await userHash(emailI, passwordI);
       if (response.s === 1) {
@@ -211,13 +222,15 @@ const Cuenta = () => {
         setEmailI("");
         setPasswordI("");
         setTimeout(() => {
-          navigate('/productos');
-        }, 5000);
+          navigate("/productos");
+        }, 1500);
       } else {
         toast.error("Datos incorrectos");
       }
     } catch (error) {
       console.log(error);
+    } finally {
+      setIsLoading2(false);
     }
   };
   const [formSubmitted, setFormSubmitted] = useState(false);
@@ -253,12 +266,7 @@ const Cuenta = () => {
       <Grid container spacing={9} justifyContent="center" marginBottom={5}>
         <Grid container item md={4} xs={12} direction="column" spacing={3}>
           <Grid item>
-            <Typography
-              color="textPrimary"
-              component="h1"
-              variant="h4"
-              type="submit"
-            >
+            <Typography color="textPrimary" component="h1" variant="h4">
               Iniciar sesión
             </Typography>
           </Grid>
@@ -308,6 +316,7 @@ const Cuenta = () => {
                   </InputAdornment>
                 }
                 label="Contraseña"
+                onKeyPress={handleKeyPress}
               />
             </FormControl>
           </Grid>

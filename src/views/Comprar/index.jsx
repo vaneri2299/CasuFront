@@ -25,7 +25,7 @@ import {
 } from "@mui/material";
 import ProductCard from "../../components/ProductCard";
 import { Spinner } from "react-bootstrap";
-import { getImagen, getProductos } from "../../api/product";
+import { getProductos } from "../../api/product";
 import { toast } from "react-toastify";
 import NotificacionContainer from "../../components/NotificacionContainer";
 

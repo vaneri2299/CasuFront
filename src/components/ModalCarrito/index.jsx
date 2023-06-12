@@ -49,14 +49,14 @@ export default function ModalCarrito(props) {
   useEffect(() => {
     dispatch(
       setCantCarrito(
-        productos.reduce((total, item) => total + item.quantity, 0)
+        productos?.reduce((total, item) => total + item.quantity, 0)
       )
     );
   }, [productos, dispatch]);
 
   useEffect(() => {
     let newTotal = 0;
-    productos.forEach((item) => {
+    productos?.forEach((item) => {
       const quantity = isNaN(item.quantity) ? 0 : item.quantity;
       newTotal += item.price * quantity;
     });
