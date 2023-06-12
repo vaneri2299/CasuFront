@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
@@ -10,17 +10,17 @@ import {
   Grid,
   IconButton,
   Stack,
-  TextField,
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import HighlightOffIcon from "@mui/icons-material/HighlightOff";
 import { NavLink } from "react-router-dom";
+import { setCantCarrito } from "../../state/actions";
+import { useDispatch } from "react-redux";
 
 const style = {
   position: "absolute",
   top: "0%",
   right: "0%",
-  // transform: "translate(-50%, -50%)",
   width: 450,
   bgcolor: "background.paper",
   border: "none",
@@ -29,6 +29,64 @@ const style = {
 };
 
 export default function ModalCarrito(props) {
+  const [productos, setProductos] = useState([]);
+  const [total, setTotal] = useState(0);
+  const dispatch = useDispatch();
+  useEffect(() => {
+    if (props.isOpen) {
+      const existingProducts = JSON.parse(localStorage.getItem("productsCasu"));
+      setProductos(existingProducts);
+      let totalPrecio = 0;
+      let totalCantidad = 0;
+      existingProducts?.forEach((product) => {
+        totalPrecio += product.price * product.quantity;
+        totalCantidad += product["quantity"];
+      });
+      setTotal(totalPrecio);
+    }
+  }, [props.isOpen]);
+
+  useEffect(() => {
+    dispatch(
+      setCantCarrito(
+        productos.reduce((total, item) => total + item.quantity, 0)
+      )
+    );
+  }, [productos, dispatch]);
+
+  useEffect(() => {
+    let newTotal = 0;
+    productos.forEach((item) => {
+      const quantity = isNaN(item.quantity) ? 0 : item.quantity;
+      newTotal += item.price * quantity;
+    });
+    setTotal(newTotal);
+  }, [productos]);
+
+  const actualizarCantidad = (e, item) => {
+    const newQuantity = parseInt(e.target.value);
+    const updatedProducts = productos.map((product) => {
+      if (product.id === item.id) {
+        return {
+          ...product,
+          quantity: newQuantity,
+        };
+      }
+      return product;
+    });
+    setProductos(updatedProducts);
+    localStorage.setItem("productsCasu", JSON.stringify(updatedProducts));
+  };
+
+  const eliminarProducto = (e, item) => {
+    console.log(e, item);
+    const nuevosProductos = productos.filter(
+      (producto) => producto.id !== item.id
+    );
+    setProductos(nuevosProductos);
+    localStorage.setItem("productsCasu", JSON.stringify(nuevosProductos));
+  };
+
   return (
     <div>
       <Modal
@@ -56,108 +114,89 @@ export default function ModalCarrito(props) {
             spacing={2}
             style={{ alignItems: "center", justifyContent: "space-between" }}
           >
-            <Grid item md={4}>
-              <Card style={{ border: "none" }} variant="outlined">
-                <CardMedia
-                  component="img"
-                  height="90"
-                  image={"/src/assets/shop1.png"}
-                  style={{
-                    objectFit: "contain",
-                  }}
-                />
-              </Card>
-            </Grid>
-            <Grid item md={6}>
-              <Typography color="textPrimary" variant="h6">
-                Producto 1
-              </Typography>
-              <Stack direction="row" spacing={2} alignItems="center">
-                <div class="form-outline">
-                  <input
-                    type="number"
-                    id="form1"
-                    class="form-control form-icon-trailing"
-                    fontWeight="bold"
-                    style={{ fontWeight: "bold", width: "80px" }}
-                  />
-                </div>
-                <Typography variant="h6">x</Typography>
-                <Typography color="#B88E2F" variant="h6">
-                  $19.99
+            {productos?.length > 0 ? (
+              productos.map((item) => (
+                <>
+                  <Grid item md={4}>
+                    <Card style={{ border: "none" }} variant="outlined">
+                      <CardMedia
+                        component="img"
+                        height="90"
+                        image={`${import.meta.env.VITE_API_URL}/assets/${
+                          item.imageUrl
+                        }`}
+                        style={{
+                          objectFit: "contain",
+                        }}
+                      />
+                    </Card>
+                  </Grid>
+                  <Grid item md={6}>
+                    <Typography color="textPrimary" variant="h6">
+                      {item.name}
+                    </Typography>
+                    <Stack direction="row" spacing={2} alignItems="center">
+                      <div className="form-outline">
+                        <input
+                          type="number"
+                          min={0}
+                          id="form1"
+                          value={item.quantity}
+                          onChange={(e) => {
+                            actualizarCantidad(e, item);
+                          }}
+                          className="form-control form-icon-trailing"
+                          fontWeight="bold"
+                          style={{ fontWeight: "bold", width: "80px" }}
+                        />
+                      </div>
+                      <Typography variant="h6">x</Typography>
+                      <Typography color="#B88E2F" variant="h6">
+                        {item.price.toFixed(2)}$
+                      </Typography>
+                    </Stack>
+                  </Grid>
+                  <Grid item>
+                    <IconButton onClick={(e) => eliminarProducto(e, item)}>
+                      <HighlightOffIcon />
+                    </IconButton>
+                  </Grid>
+                </>
+              ))
+            ) : (
+              <Grid item md={12}>
+                <Typography variant="body1">
+                  No hay productos agregados
                 </Typography>
-              </Stack>
-            </Grid>
-            <Grid item>
-              <IconButton>
-                <HighlightOffIcon />
-              </IconButton>
-            </Grid>
-            <Grid item md={4}>
-              <Card style={{ border: "none" }} variant="outlined">
-                <CardMedia
-                  component="img"
-                  height="90"
-                  image={"/src/assets/shop2.png"}
-                  style={{
-                    objectFit: "contain",
-                  }}
-                />
-              </Card>
-            </Grid>
-            <Grid item md={6}>
-              <Typography color="textPrimary" variant="h6">
-                Producto 2
-              </Typography>
-              <Stack direction="row" spacing={2} alignItems="center">
-                <div class="form-outline">
-                  <input
-                    type="number"
-                    id="form1"
-                    class="form-control form-icon-trailing"
-                    fontWeight="bold"
-                    style={{ fontWeight: "bold", width: "80px" }}
-                  />
-                </div>
-                <Typography variant="h6">x</Typography>
-                <Typography color="#B88E2F" variant="h6">
-                  $19.99
-                </Typography>
-              </Stack>
-            </Grid>
-            <Grid item>
-              <IconButton>
-                <HighlightOffIcon />
-              </IconButton>
-            </Grid>
+              </Grid>
+            )}
             <Grid item md={12}>
-              <Stack
-                direction="row"
-                style={{ justifyContent: "space-between" }}
-              >
-                <Typography variant="h6">Subtotal:</Typography>
-                <Typography color="#B88E2F" variant="h6">
-                  39,98
-                </Typography>
-              </Stack>
               <Divider
                 flexItem
                 color="black"
                 style={{ marginBottom: "16px" }}
               />
-              <Stack direction="row" style={{ justifyContent: "space-evenly" }}>
-                <Button
-                  variant="outlined"
-                  color="primary"
-                  //   onClick={"handleAgregar"}
-                  size="small"
-                >
-                  Ver carrito
-                </Button>
+              <Stack
+                direction="row"
+                style={{ justifyContent: "space-between" }}
+                mb={3}
+              >
+                <Typography variant="h6">Subtotal:</Typography>
+                <Typography color="#B88E2F" variant="h6">
+                  {total.toFixed(2)}$
+                </Typography>
+              </Stack>
+
+              <Stack
+                direction="row"
+                style={{ justifyContent: "center" }}
+                fullWidth
+              >
                 <Button
                   variant="outlined"
                   color="primary"
                   component={NavLink}
+                  fullWidth
                   to={"/checkout"}
                   onClick={props.closeModal}
                   size="small"

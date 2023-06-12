@@ -1,14 +1,15 @@
-input[type="number"]::-webkit-outer-spin-button,
-input[type="number"]::-webkit-inner-spin-button {
+.Detalle input[type="number"]::-webkit-outer-spin-button,
+.Detalle input[type="number"]::-webkit-inner-spin-button {
   -webkit-appearance: none;
   margin: 0;
+  display: none;
 }
 
-input[type="number"] {
+.Detalle input[type="number"] {
   -moz-appearance: textfield;
   text-align: center;
 }
 
-input[type="number"]::-moz-focus-inner {
+.Detalle input[type="number"]::-moz-focus-inner {
   border: 0;
 }

@@ -1,19 +1,37 @@
-import React from 'react'
-import { Link, Outlet } from 'react-router-dom';
-import Footer from '../components/Footer';
-import Navbar from '../components/Navbar'
+import React, { useEffect } from "react";
+import { useDispatch } from "react-redux";
+import { Outlet } from "react-router-dom";
+import { toast } from "react-toastify";
+import Footer from "../components/Footer";
+import Navbar from "../components/Navbar";
+import NotificacionContainer from "../components/NotificacionContainer";
+import { setIsLoged } from "../state/actions";
 
 const Layout = () => {
-  return (
+  const dispatch = useDispatch();
+  const checkToken = async () => {
+    const userToken = localStorage.getItem("casuToken");
+    if (userToken) {
+      dispatch(setIsLoged(true));
+    }else{
+      toast.success("Inicia sesión nuevamente")
+    }
+  };
 
+  useEffect(() => {
+    checkToken();
+  }, []);
+
+  return (
     <>
       <Navbar />
       <main>
         <Outlet />
       </main>
-      <Footer/>
+      <Footer />
+      <NotificacionContainer />
     </>
-  )
-}
+  );
+};
 
-export default Layout
+export default Layout;

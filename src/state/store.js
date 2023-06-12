@@ -3,11 +3,9 @@ import reducer from './reducers';
 
 const initialState = {
   isLoged: false,
-  modalRegister: false,
-  modalLogin: false,
   authToken: '',
   userData: {},
-  botonEnviar: false
+  cantCarrito: 0
 };
 
 const store = createStore(

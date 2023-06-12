@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { NavLink, useLocation } from "react-router-dom";
+import { NavLink, redirect, useLocation, Navigate, useNavigate  } from "react-router-dom";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import banner from "../../assets/cuenta.jpg";
@@ -28,15 +28,20 @@ import {
   crearUsuario,
   enviarCodigo,
   existUser,
+  userHash,
   verificarCodigo,
 } from "../../api/user";
 import NotificacionContainer from "../../components/NotificacionContainer";
 import { toast } from "react-toastify";
 import bcrypt from "bcryptjs";
+import { useDispatch } from "react-redux";
+import { setAuthToken, setIsLoged } from "../../state/actions";
 
 const Cuenta = () => {
+  const dispatch = useDispatch();
   const location = useLocation();
   const currentUrl = location.pathname;
+  const navigate = useNavigate();
 
   const [openModal, setOpenModal] = useState(false);
   const [password, setPassword] = useState("");
@@ -51,12 +56,12 @@ const Cuenta = () => {
 
   const [email, setEmail] = useState("");
   const [emailI, setEmailI] = useState("");
+  const [passwordI, setPasswordI] = useState("");
   const [codigo, setCodigo] = useState("");
   const [codigoEnv, setCodigoEnv] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isLoading2, setIsLoading2] = useState(false);
   const [textButton, setTextButton] = useState("Enviar código");
-
   const formik = useFormik({
     initialValues: {
       email: "",
@@ -71,19 +76,22 @@ const Cuenta = () => {
       !codigoEnv ? verifyUser(email) : verifyCod(email, codigo);
     },
   });
+
   const formik2 = useFormik({
     initialValues: {
-      email: "",
       password: "",
     },
     validationSchema: Yup.object({
-      email: Yup.string()
-        .email("Debe ingresar un correo electrónico válido")
-        .required("El correo electrónico es requerido"),
+      password: Yup.string()
+        .required("La contraseña es requerida")
+        .min(8, "La contraseña debe tener al menos 8 caracteres.")
+        .matches(
+          /^(?=.*[!@#$%^&*.])(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])[a-zA-Z0-9!@#$%^&*.]{8,}$/,
+          "Debe incluir una letra mayúscula, una letra minúscula, un número y al menos un carácter especial."
+        ),
     }),
     onSubmit: (values) => {
-      setIsLoading2(true);
-      !codigoEnv ? verifyUser(email) : verifyCod(email, codigo);
+      verificarPassword();
     },
   });
 
@@ -144,8 +152,9 @@ const Cuenta = () => {
     setEmail(event.target.value);
     formik.handleChange(event);
   };
-  const handleChangeEmailI = (event) => {
-    setEmailI(event.target.value);
+
+  const handleChangePassword = (event) => {
+    setPassword(event.target.value);
     formik2.handleChange(event);
   };
 
@@ -190,6 +199,27 @@ const Cuenta = () => {
     }
   };
 
+  const iniciarSesion = async () => {
+    try {
+      const response = await userHash(emailI, passwordI);
+      if (response.s === 1) {
+        toast.success(response.mensaje);
+        const token = response.data;
+        dispatch(setIsLoged(true));
+        dispatch(setAuthToken(token));
+        localStorage.setItem("casuToken", token);
+        setEmailI("");
+        setPasswordI("");
+        setTimeout(() => {
+          navigate('/productos');
+        }, 5000);
+      } else {
+        toast.error("Datos incorrectos");
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
   const [formSubmitted, setFormSubmitted] = useState(false);
   return (
     <>
@@ -220,92 +250,82 @@ const Cuenta = () => {
         </Breadcrumbs>
       </Paper>
 
-      <Grid
-        container
-        spacing={9}
-        // alignItems="center"
-        justifyContent="center"
-        marginBottom={5}
-        // paddingInline={4}
-      >
+      <Grid container spacing={9} justifyContent="center" marginBottom={5}>
         <Grid container item md={4} xs={12} direction="column" spacing={3}>
           <Grid item>
-            <Typography color="textPrimary" component="h1" variant="h4">
+            <Typography
+              color="textPrimary"
+              component="h1"
+              variant="h4"
+              type="submit"
+            >
               Iniciar sesión
             </Typography>
           </Grid>
-          <form onSubmit={formik2.handleSubmit}>
-            <Grid item fullWidth={true} mt={3}>
-              <FormControl variant="outlined" fullWidth={true}>
-                <InputLabel htmlFor="outlined-adornment-email-sesion">
-                  {"Correo electrónico"}
-                </InputLabel>
-                <OutlinedInput
-                  id="outlined-adornment-email-sesion"
-                  name="emailI"
-                  type="email"
-                  value={emailI}
-                  onChange={handleChangeEmailI}
-                  endAdornment={
-                    <InputAdornment position="end">
-                      <IconButton edge="end">
-                        <AccountCircle />
-                      </IconButton>
-                    </InputAdornment>
-                  }
-                  label={"Correo electrónico"}
-                  error={formik2.touched.email && Boolean(formik2.errors.email)}
-                  helperText={formik2.touched.email && formik2.errors.email}
-                />
-                {formSubmitted && formik2.errors.email && (
-                  <FormHelperText id="outlined-adornment-email-sesion">
-                    {formik2.touched.email && formik2.errors.email}
-                  </FormHelperText>
-                )}
-              </FormControl>
-            </Grid>
-            <Grid item mt={2} mb={2}>
-              <FormControl variant="outlined" fullWidth={true}>
-                <InputLabel htmlFor="outlined-adornment-password">
-                  Password
-                </InputLabel>
-                <OutlinedInput
-                  id="outlined-adornment-password"
-                  type={showPassword ? "text" : "password"}
-                  endAdornment={
-                    <InputAdornment position="end">
-                      <IconButton
-                        aria-label="toggle password visibility"
-                        onClick={handleClickShowPassword}
-                        onMouseDown={handleMouseDownPassword}
-                        edge="end"
-                      >
-                        {showPassword ? <VisibilityOff /> : <Visibility />}
-                      </IconButton>
-                    </InputAdornment>
-                  }
-                  label="Password"
-                />
-              </FormControl>
-            </Grid>
-            <Grid item textAlign="center">
-              <Button
-                variant="contained"
-                color="primary"
-                type="submit"
-                disabled={isLoading}
-                size="small"
-                onClick={() => {
-                  setFormSubmitted(true);
-                }}
-              >
-                Iniciar sesión
-              </Button>
-            </Grid>
-            <Grid item textAlign="center">
-              <Link>¿Olvidaste la contraseña?</Link>
-            </Grid>
-          </form>
+          <Grid item fullWidth={true}>
+            <FormControl variant="outlined" fullWidth={true}>
+              <InputLabel htmlFor="outlined-adornment-email-sesion">
+                {"Correo electrónico"}
+              </InputLabel>
+              <OutlinedInput
+                id="outlined-adornment-email-sesion"
+                name="emailI"
+                type="email"
+                value={emailI}
+                onChange={(e) => setEmailI(e.target.value)}
+                endAdornment={
+                  <InputAdornment position="end">
+                    <IconButton edge="end">
+                      <AccountCircle />
+                    </IconButton>
+                  </InputAdornment>
+                }
+                label={"Correo electrónico"}
+                required
+              />
+            </FormControl>
+          </Grid>
+          <Grid item>
+            <FormControl variant="outlined" fullWidth={true}>
+              <InputLabel htmlFor="outlined-adornment-password">
+                Contraseña
+              </InputLabel>
+              <OutlinedInput
+                id="outlined-adornment-password"
+                type={showPassword ? "text" : "password"}
+                value={passwordI}
+                onChange={(e) => setPasswordI(e.target.value)}
+                endAdornment={
+                  <InputAdornment position="end">
+                    <IconButton
+                      aria-label="toggle password visibility"
+                      onClick={handleClickShowPassword}
+                      onMouseDown={handleMouseDownPassword}
+                      edge="end"
+                    >
+                      {showPassword ? <VisibilityOff /> : <Visibility />}
+                    </IconButton>
+                  </InputAdornment>
+                }
+                label="Contraseña"
+              />
+            </FormControl>
+          </Grid>
+          <Grid item textAlign="center">
+            <Button
+              variant="contained"
+              color="primary"
+              type="submit"
+              disabled={isLoading2}
+              size="small"
+              onClick={() => iniciarSesion()}
+            >
+              Iniciar sesión
+            </Button>
+          </Grid>
+          <Grid item textAlign="center">
+            <Link>¿Olvidaste la contraseña?</Link>
+          </Grid>
         </Grid>
         {/* ********************** REGISTRAR ******************* */}
         <Grid container item md={4} xs={12} direction="column" spacing={3}>
@@ -323,7 +343,7 @@ const Cuenta = () => {
                 <OutlinedInput
                   id="outlined-adornment-email-register"
                   name="email"
-                  type={"email"}
+                  type="email"
                   value={email}
                   onChange={handleChangeEmail}
                   endAdornment={
@@ -392,70 +412,81 @@ const Cuenta = () => {
       </Grid>
       <Dialog
         open={openModal}
+        spacing={2}
         onClose={"handleClose"}
         BackdropProps={{
           sx: { backdropFilter: "blur(4px)" },
         }}
+        maxWidth="sm"
       >
-        <DialogTitle>Registrar cuenta</DialogTitle>
-        <DialogContent>
-          <DialogContentText>
-            Por favor, ingrese su contraseña para registrar su cuenta.
-          </DialogContentText>
-          <TextField
-            autoFocus
-            fullWidth
-            margin="dense"
-            id="password"
-            type={showPassword ? "text" : "password"}
-            onChange={(e) => setPassword(e.target.value)}
-            value={password}
-            variant="outlined"
-            label="Contraseña"
-            InputProps={{
-              endAdornment: (
-                <InputAdornment position="end">
-                  <IconButton
-                    aria-label="toggle password visibility"
-                    onClick={handleClickShowPassword}
-                    onMouseDown={handleMouseDownPassword}
-                    edge="end"
-                  >
-                    {showPassword ? <VisibilityOff /> : <Visibility />}
-                  </IconButton>
-                </InputAdornment>
-              ),
-            }}
-          />
-          <TextField
-            fullWidth
-            margin="dense"
-            id="password2"
-            type={showPassword2 ? "text" : "password"}
-            onChange={(e) => setPassword2(e.target.value)}
-            value={password2}
-            variant="outlined"
-            label="Confirmar contraseña"
-            InputProps={{
-              endAdornment: (
-                <InputAdornment position="end">
-                  <IconButton
-                    aria-label="toggle password visibility"
-                    onClick={handleClickShowPassword2}
-                    onMouseDown={handleMouseDownPassword}
-                    edge="end"
-                  >
-                    {showPassword2 ? <VisibilityOff /> : <Visibility />}
-                  </IconButton>
-                </InputAdornment>
-              ),
-            }}
-          />
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleClose}>Cancelar</Button>
-          <Button onClick={verificarPassword}>Registarse</Button>
-        </DialogActions>
+        <form onSubmit={formik2.handleSubmit}>
+          <DialogTitle>Registrar cuenta</DialogTitle>
+          <DialogContent>
+            <DialogContentText>
+              Por favor, ingrese su contraseña para registrar su cuenta.
+            </DialogContentText>
+            <FormControl variant="outlined" fullWidth>
+              <TextField
+                fullWidth
+                margin="dense"
+                id="password"
+                name="password"
+                type={showPassword ? "text" : "password"}
+                label="Contraseña"
+                value={password}
+                onChange={handleChangePassword}
+                error={
+                  formik2.touched.password && Boolean(formik2.errors.password)
+                }
+                helperText={formik2.touched.password && formik2.errors.password}
+                InputProps={{
+                  endAdornment: (
+                    <InputAdornment position="end">
+                      <IconButton
+                        aria-label="toggle password visibility"
+                        onClick={handleClickShowPassword}
+                        onMouseDown={handleMouseDownPassword}
+                        edge="end"
+                      >
+                        {showPassword ? <VisibilityOff /> : <Visibility />}
+                      </IconButton>
+                    </InputAdornment>
+                  ),
+                }}
+              />
+            </FormControl>
+            <FormControl variant="outlined" fullWidth>
+              <TextField
+                fullWidth
+                margin="dense"
+                id="password2"
+                type={showPassword2 ? "text" : "password"}
+                onChange={(e) => setPassword2(e.target.value)}
+                value={password2}
+                variant="outlined"
+                label="Confirmar contraseña"
+                InputProps={{
+                  endAdornment: (
+                    <InputAdornment position="end">
+                      <IconButton
+                        aria-label="toggle password visibility"
+                        onClick={handleClickShowPassword2}
+                        onMouseDown={handleMouseDownPassword}
+                        edge="end"
+                      >
+                        {showPassword2 ? <VisibilityOff /> : <Visibility />}
+                      </IconButton>
+                    </InputAdornment>
+                  ),
+                }}
+              />
+            </FormControl>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={handleClose}>Cancelar</Button>
+            <Button type="submit">Registrarse</Button>
+          </DialogActions>
+        </form>
       </Dialog>
       <NotificacionContainer />
     </>

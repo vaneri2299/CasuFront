@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { styled, alpha } from "@mui/material/styles";
 import AppBar from "@mui/material/AppBar";
 import Box from "@mui/material/Box";
@@ -19,6 +19,8 @@ import { Button } from "@mui/material";
 import { NavLink } from "react-router-dom";
 import { UseModal } from "../../hooks/useModal";
 import ModalCarrito from "../ModalCarrito";
+import { useDispatch, useSelector } from "react-redux";
+import { setCantCarrito } from "../../state/actions";
 
 const Search = styled("div")(({ theme }) => ({
   position: "relative",
@@ -112,7 +114,7 @@ export default function PrimarySearchAppBar() {
       open={isMenuOpen}
       onClose={handleMenuClose}
     >
-      <MenuItem onClick={handleMenuClose}>Profile</MenuItem>
+      <MenuItem onClick={handleMenuClose}>Profileee</MenuItem>
       <MenuItem component={NavLink} to={"/cuenta"}>
         Mi cuenta
       </MenuItem>
@@ -171,10 +173,23 @@ export default function PrimarySearchAppBar() {
         >
           <AccountCircleOutlinedIcon />
         </IconButton>
-        <p>Profile</p>
+        <p>Profile2</p>
       </MenuItem>
     </Menu>
   );
+
+  const dispatch = useDispatch();
+  const isLoged = useSelector((state) => state.isLoged);
+  const cantCarrito = useSelector((state) => state.cantCarrito);
+
+  useEffect(() => {
+    let total = 0;
+    const existingProducts = JSON.parse(localStorage.getItem("productsCasu")) || [];
+    existingProducts.forEach((producto) => {
+      total += producto["quantity"];
+    });
+    dispatch(setCantCarrito(total));
+  }, []);
 
   return (
     <>
@@ -256,29 +271,44 @@ export default function PrimarySearchAppBar() {
               />
             </Search>
             <Box sx={{ flexGrow: 1 }} />
-            <Box sx={{ display: { xs: "none", md: "flex" } }}>
-              <IconButton
-                size="large"
-                aria-label="show 4 new mails"
-                color="inherit"
-                onClick={openModalCarrito}
+            {isLoged ? (
+              <Box sx={{ display: { xs: "none", md: "flex" } }}>
+                <IconButton
+                  size="large"
+                  aria-label="show 4 new mails"
+                  color="inherit"
+                  onClick={openModalCarrito}
+                >
+                  <Badge badgeContent={cantCarrito || null} color="error">
+                    <ShoppingCartOutlinedIcon />
+                  </Badge>
+                </IconButton>
+                <IconButton
+                  size="large"
+                  edge="end"
+                  aria-label="account of current user"
+                  aria-controls={menuId}
+                  aria-haspopup="true"
+                  onClick={handleProfileMenuOpen}
+                  color="inherit"
+                >
+                  <AccountCircleOutlinedIcon />
+                </IconButton>
+              </Box>
+            ) : (
+              <Button
+                component={NavLink}
+                to="/cuenta"
+                sx={{
+                  my: 2,
+                  color: "black",
+                  display: "block",
+                  fontWeight: "bold",
+                }}
               >
-                <Badge badgeContent={4} color="error">
-                  <ShoppingCartOutlinedIcon />
-                </Badge>
-              </IconButton>
-              <IconButton
-                size="large"
-                edge="end"
-                aria-label="account of current user"
-                aria-controls={menuId}
-                aria-haspopup="true"
-                onClick={handleProfileMenuOpen}
-                color="inherit"
-              >
-                <AccountCircleOutlinedIcon />
-              </IconButton>
-            </Box>
+                Iniciar sesión
+              </Button>
+            )}
             <Box sx={{ display: { xs: "flex", md: "none" } }}>
               <IconButton
                 size="large"

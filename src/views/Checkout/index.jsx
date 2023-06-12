@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { NavLink, useLocation } from "react-router-dom";
 import banner from "../../assets/cuenta.jpg";
 import {
@@ -27,7 +27,17 @@ const Checkout = () => {
     { value: 0, label: "Tarjeta de Crédito" },
     { value: 1, label: "Criptomonedas" },
   ];
-
+  const [productos, setProductos] = useState();
+  const [total, setTotal] = useState(0);
+  useEffect(() => {
+    const existingProducts = JSON.parse(localStorage.getItem("productsCasu"));
+    setProductos(existingProducts);
+    let totalPrecio = 0;
+    existingProducts?.forEach((product) => {
+      totalPrecio += product.price * product.quantity;
+    });
+    setTotal(totalPrecio);
+  }, []);
   return (
     <>
       <Paper
@@ -127,11 +137,11 @@ const Checkout = () => {
               fullWidth
               id="outlined-disabled"
               label="Monto"
-              type="number"
+              type="text"
               size="small"
               variant="outlined"
               disabled
-              defaultValue={39.98}
+              value={`$${total}`}
               // autoComplete="current-password"
             />
           </Grid>
@@ -146,41 +156,47 @@ const Checkout = () => {
             </Button>
           </Grid>
         </Grid>
-        <Grid container item md={4} xs={12} justifyContent="space-between">
-          <Grid item md={6}>
+        <Grid container item md={5} xs={12} justifyContent="space-between">
+          <Grid container md={8}>
             <Typography color="textPrimary" component="h1" variant="h5">
               Productos
             </Typography>
           </Grid>
-          <Grid item md={6}>
+          <Grid container md={4}>
             <Typography color="textPrimary" component="h1" variant="h5">
               Subtotal
             </Typography>
           </Grid>
-          <Grid item md={6}>
-            <Stack direction="row" spacing={2} alignItems="center">
-              <Typography color="textSecondary" variant="body">
-                Producto 2
+          {productos?.length > 0 ? (
+            productos.map((item) => (
+              <>
+                <Grid item md={4}>
+                  <Stack direction="row" spacing={2} alignItems="center">
+                    <Typography color="textSecondary" variant="body">
+                      {item.name}
+                    </Typography>
+                  </Stack>
+                </Grid>
+                <Grid item md={1}>
+                  <Typography variant="body">x</Typography>
+                </Grid>
+                <Grid item md={3}>
+                  <Typography variant="body">{item.quantity}</Typography>
+                </Grid>
+                <Grid item md={4}>
+                  <Typography variant="body">
+                    ${item.quantity * item.price}
+                  </Typography>
+                </Grid>
+              </>
+            ))
+          ) : (
+            <Grid item md={12}>
+              <Typography variant="body1">
+                No hay productos agregados
               </Typography>
-              <Typography variant="body">x</Typography>
-              <Typography variant="body">1</Typography>
-            </Stack>
-          </Grid>
-          <Grid item md={6}>
-            <Typography variant="body">$19.99</Typography>
-          </Grid>
-          <Grid item md={6}>
-            <Stack direction="row" spacing={2} alignItems="center">
-              <Typography color="textSecondary" variant="body">
-                Producto 2
-              </Typography>
-              <Typography variant="body">x</Typography>
-              <Typography variant="body">1</Typography>
-            </Stack>
-          </Grid>
-          <Grid item md={6}>
-            <Typography variant="body">$19.99</Typography>
-          </Grid>
+            </Grid>
+          )}
           <Grid item xs={12}>
             <Divider
               flexItem
@@ -188,14 +204,14 @@ const Checkout = () => {
               style={{ marginBottom: "16px", marginTop: "16px" }}
             />
           </Grid>
-          <Grid item md={6}>
+          <Grid item md={8}>
             <Typography color="textPrimary" variant="h6">
               Total
             </Typography>
           </Grid>
-          <Grid item md={6}>
+          <Grid item md={4}>
             <Typography color="#B88E2F" variant="h6" fontWeight="bold">
-              $39.98
+              ${total}
             </Typography>
           </Grid>
         </Grid>

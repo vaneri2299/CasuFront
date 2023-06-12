@@ -5,11 +5,17 @@ import Comprar from "../views/Comprar";
 import DetalleProducto from "../views/DetalleProducto";
 import Cuenta from "../views/Cuenta";
 import Checkout from "../views/Checkout";
+import { Provider } from 'react-redux';
+import store from '../state/store';
 
 export const router = createBrowserRouter([
   {
     path: "/",
-    element: <Layout />,
+    element: (
+      <Provider store={store}>
+        <Layout />
+      </Provider>
+    ),
     children: [
       {
         path: "/",

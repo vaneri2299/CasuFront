@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { NavLink, useLocation } from "react-router-dom";
 import banner from "../../assets/banner_shop.jpg";
 import { styled, alpha } from "@mui/material/styles";
@@ -12,7 +12,6 @@ import {
   Typography,
   Link,
   FormControl,
-  InputLabel,
   Select,
   MenuItem,
   TextField,
@@ -22,18 +21,21 @@ import {
   Checkbox,
   Pagination,
   Divider,
+  Container,
 } from "@mui/material";
 import ProductCard from "../../components/ProductCard";
+import { Spinner } from "react-bootstrap";
+import { getImagen, getProductos } from "../../api/product";
+import { toast } from "react-toastify";
+import NotificacionContainer from "../../components/NotificacionContainer";
 
 const Comprar = () => {
   const location = useLocation();
   const currentUrl = location.pathname;
-
   const StyledInputBase = styled(InputBase)(({ theme }) => ({
     color: "inherit",
     "& .MuiInputBase-input": {
       padding: theme.spacing(1, 1, 1, 0),
-      // vertical padding + font size from searchIcon
       paddingLeft: `calc(1em + ${theme.spacing(2)})`,
       transition: theme.transitions.create("width"),
       width: "100%",
@@ -99,6 +101,28 @@ const Comprar = () => {
 
     setChecked(newChecked);
   };
+
+  const [loading, setLoading] = useState(true);
+  const [productos, setProductos] = useState();
+
+  useEffect(() => {
+    const cargarProductos = async () => {
+      try {
+        const response = await getProductos();
+        if (response.s === 1) {
+          toast.success(response.mensaje);
+          setProductos(response.data);
+        } else {
+          toast.error(response.mensaje);
+        }
+      } catch (error) {
+        toast.error("Error inesperado");
+      } finally {
+        setLoading(false);
+      }
+    };
+    cargarProductos();
+  }, []);
 
   return (
     <>
@@ -222,31 +246,41 @@ const Comprar = () => {
           </Search>
         </Grid>
       </Grid>
-      <Grid container spacing={4} paddingInline={6} marginBottom={2}>
-        <Grid item md={3}>
-          <ProductCard
-            name="Producto 1"
-            imageUrl="shop1.png"
-            price="19.99"
-            url={currentUrl + "/id=1"}
-          />
-        </Grid>
-        <Grid item md={3}>
-          <ProductCard name="Producto 2" imageUrl="shop2.png" price="19.99" />
-        </Grid>
-        <Grid item md={3}>
-          <ProductCard name="Producto 3" imageUrl="shop3.png" price="19.99" />
-        </Grid>
-        <Grid item md={3}>
-          <ProductCard
-            name="Producto 4"
-            imageUrl="novedades.png"
-            price="19.99"
-          />
-        </Grid>
-        <Grid item md={3}>
-          <ProductCard name="Producto 5" imageUrl="shop2.png" price="19.99" />
-        </Grid>
+      <Grid
+        container
+        spacing={4}
+        paddingInline={6}
+        marginBottom={2}
+        marginInline="auto"
+      >
+        {loading ? (
+          <Container
+            sx={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              height: "50vh",
+              marginInline: "auto",
+            }}
+          >
+            <Spinner animation="border" variant="primary" />
+          </Container>
+        ) : (
+          <>
+            {productos.map((item) => (
+              <Grid item md={3} key={item._id}>
+                <ProductCard
+                  name={item.nombre}
+                  imageUrl={item.imagen}
+                  price={item.precio}
+                  url={currentUrl + "/" + item._id}
+                  maxCantidad = {item.cantidad}
+                />
+              </Grid>
+            ))}
+          </>
+        )}
+
         <Grid item md={12}>
           <Pagination
             count={3}
@@ -258,6 +292,7 @@ const Comprar = () => {
           />
         </Grid>
       </Grid>
+      <NotificacionContainer />
     </>
   );
 };

@@ -13,15 +13,19 @@ import {
   Button,
   Card,
 } from "@mui/material";
-import { NavLink } from "react-router-dom";
+import { NavLink, useParams } from "react-router-dom";
 import NavigateNextIcon from "@mui/icons-material/NavigateNext";
 import "./styles.css";
 import { Box } from "@mui/system";
 import TabList from "@mui/lab/TabList";
 import TabPanel from "@mui/lab/TabPanel";
 import TabContext from "@mui/lab/TabContext";
+import { getProducto } from "../../api/product";
 
 const DetalleProducto = () => {
+  const params = useParams();
+
+  const [producto, setProducto] = useState();
   const [cantidadProducto, setCantidadProducto] = useState(0);
   const [value, setValue] = useState("1");
 
@@ -29,9 +33,19 @@ const DetalleProducto = () => {
     setValue(newValue);
   };
 
-  //   useEffect(() => {
-  //     console.log(cantidadProducto);
-  //   }, [cantidadProducto]);
+  useEffect(() => {
+    const cargarProducto = async () => {
+      try {
+        const id = params.id;
+        const response = await getProducto(id);
+        setProducto(response.data);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+
+    cargarProducto();
+  }, []);
 
   return (
     <div style={{ marginTop: "80px", marginInline: "16px" }}>
@@ -45,7 +59,7 @@ const DetalleProducto = () => {
         <Link color="inherit" component={NavLink} to="/productos">
           Productos
         </Link>
-        <Typography color="textPrimary">Producto 1</Typography>
+        <Typography color="textPrimary">{producto?.nombre}</Typography>
       </Breadcrumbs>
       <Grid container spacing={2} mt={1} mb={2}>
         <Grid item md={5}>
@@ -56,7 +70,14 @@ const DetalleProducto = () => {
             <CardMedia
               component="img"
               height="400"
-              image={"/src/assets/shop1.png"}
+              image={`${import.meta.env.VITE_API_URL}/assets/${
+                producto?.imagen
+              }`}
+              onError={(e) => {
+                e.target.src = `${
+                  import.meta.env.VITE_API_URL
+                }/assets/defecto.jpg`;
+              }}
               style={{
                 objectFit: "contain",
               }}
@@ -65,10 +86,10 @@ const DetalleProducto = () => {
         </Grid>
         <Grid item md={6}>
           <Typography color="textPrimary" variant="h5">
-            Producto 1
+            {producto?.nombre}
           </Typography>
           <Typography color="textSecondary" variant="h6" mb={3}>
-            19.99
+            {producto?.precio}$
           </Typography>
           {/* <Stack direction="row" mb={2} mt={1}>
             <Rating name="read-only" value={3} readOnly />
@@ -88,17 +109,14 @@ const DetalleProducto = () => {
             component="p"
             mb={5}
           >
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Officiis
-            commodi eveniet ut! Consequatur iste et odio perspiciatis. Autem,
-            laboriosam, quis odit saepe temporibus ex fugiat similique provident
-            nisi, molestias explicabo.
+            {producto?.descripcion}
           </Typography>
           <Stack direction="row" spacing={3} mb={2} mt={2}>
             <TextField
               type="number"
               size="small"
+              className="Detalle"
               style={{ width: "200px" }}
-              //   className="inputNoSpin"
               value={cantidadProducto}
               onChange={(e) => setCantidadProducto(Number(e.target.value))}
               InputProps={{
@@ -135,7 +153,7 @@ const DetalleProducto = () => {
             </Button>
           </Stack>
           <Divider flexItem color="black" style={{ marginBottom: "8px" }} />
-          <Stack direction="row" spacing={1} mb={4} mt={2}>
+          <Stack direction="row" spacing={1} mt={2}>
             <Typography variant="subtitle1" component="p">
               Categoría:
             </Typography>
@@ -146,7 +164,16 @@ const DetalleProducto = () => {
             //   style={{ marginTop: "8px" }}
             /> */}
             <Typography variant="subtitle1" component="p">
-              Cactus
+              {producto?.categoria.nombre}
+            </Typography>
+          </Stack>
+          <Stack direction="row" spacing={1} mb={4}>
+            <Typography variant="subtitle1" component="p">
+              Disponible:
+            </Typography>
+
+            <Typography variant="subtitle1" component="p">
+              {producto?.cantidad}
             </Typography>
           </Stack>
         </Grid>
@@ -179,17 +206,7 @@ const DetalleProducto = () => {
           <TabPanel value="1">
             <>
               <Typography variant="body1" component="p">
-                Lorem ipsum dolor sit amet consectetur adipisicing elit.
-                Excepturi odio molestias maxime assumenda debitis. Veritatis
-                incidunt harum unde vero modi, impedit quia quo nesciunt, non ad
-                sit placeat commodi aperiam!
-              </Typography>
-              <br />
-              <Typography variant="body1" component="p">
-                Lorem ipsum dolor sit amet consectetur adipisicing elit.
-                Excepturi odio molestias maxime assumenda debitis. Veritatis
-                incidunt harum unde vero modi, impedit quia quo nesciunt, non ad
-                sit placeat commodi aperiam!
+              {producto?.informacion || "Este producto no tiene información adicional"}
               </Typography>
             </>
           </TabPanel>
