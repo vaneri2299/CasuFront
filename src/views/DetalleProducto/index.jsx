@@ -99,7 +99,7 @@ const DetalleProducto = () => {
       setProductosList([...productosList, newProduct]);
     } else {
       // El producto ya existe en la lista de productos, así que actualizamos su cantidad.
-      const updatedProducts = productosList.map((product, index) => {
+      const updatedProducts = productosList?.map((product, index) => {
         if (index === existingProductIndex) {
           return {
             ...product,

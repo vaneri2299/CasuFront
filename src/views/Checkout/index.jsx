@@ -15,6 +15,7 @@ import {
   Button,
   FormControl,
   TextField,
+  CircularProgress,
 } from "@mui/material";
 import "./styles.css";
 import { pagarConCrypto, pagarConTDC } from "../../api/banco";
@@ -35,6 +36,8 @@ const Checkout = () => {
   const [total, setTotal] = useState(0);
   const [email, setEmail] = useState("");
   const [CVV, setCVV] = useState("");
+  const [fecha, setFecha] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     const existingProducts = JSON.parse(localStorage.getItem("productsCasu"));
@@ -44,19 +47,21 @@ const Checkout = () => {
       totalPrecio += product.price * product.quantity;
     });
     setTotal(totalPrecio);
-  }, []);
+  }, [productos]);
 
   useEffect(() => {
     setEmail("");
     setCVV("");
+    setFecha("");
   }, [selectedValue]);
 
   const pagar = async () => {
     try {
       if (email !== "" && CVV !== "" && selectedValue !== "") {
-        const fechaAct = moment().format("DD-MM-YYYY");
+        setIsLoading(true);
         if (selectedValue === 0) {
-          const response = await pagarConTDC(email, CVV, fechaAct, total);
+          const fechaF = moment(fecha).format("MM/YY");
+          const response = await pagarConTDC(email, CVV, fechaF, total);
           if (response.ok === true) {
             toast.success("Transacción existosa");
           } else {
@@ -73,7 +78,11 @@ const Checkout = () => {
       } else {
         toast.error("Complete los datos para continuar");
       }
-    } catch (error) {}
+    } catch (error) {
+      toast.error("Ha ocurrido un error");
+    } finally {
+      setIsLoading(false);
+    }
   };
   return (
     <>
@@ -147,7 +156,7 @@ const Checkout = () => {
               Complete el siguiente formulario
             </InputLabel>
           </Grid>
-          <Grid item md={6}>
+          <Grid item md={selectedValue === 0 ? 4 : 6}>
             <TextField
               fullWidth
               id="outlined-email-input"
@@ -162,7 +171,22 @@ const Checkout = () => {
               onChange={(e) => setEmail(e.target.value)}
             />
           </Grid>
-          <Grid item md={3}>
+          {selectedValue === 0 && (
+            <Grid item md={4}>
+              <TextField
+                fullWidth
+                id="outlined-email-input"
+                label="Fecha de Vencimiento"
+                type="month"
+                size="small"
+                variant="outlined"
+                required
+                value={fecha}
+                onChange={(e) => setFecha(e.target.value)}
+              />
+            </Grid>
+          )}
+          <Grid item md={2}>
             <TextField
               fullWidth
               id="outlined-pin-input"
@@ -175,7 +199,7 @@ const Checkout = () => {
               onChange={(e) => setCVV(e.target.value)}
             />
           </Grid>
-          <Grid item md={3}>
+          <Grid item md={selectedValue === 0 ? 2 : 3}>
             <TextField
               fullWidth
               id="outlined-disabled"
@@ -192,10 +216,11 @@ const Checkout = () => {
               variant="contained"
               color="primary"
               type="submit"
-              onClick={pagar}
+              disabled={isLoading}
+              onClick={!isLoading ? pagar : null}
               size="small"
             >
-              Finalizar compra
+              {isLoading ? <CircularProgress size={24} /> : "Finalizar compra"}
             </Button>
           </Grid>
         </Grid>
