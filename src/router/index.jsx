@@ -7,6 +7,7 @@ import Cuenta from "../views/Cuenta";
 import Checkout from "../views/Checkout";
 import { Provider } from 'react-redux';
 import store from '../state/store';
+import AboutUs from "../views/SobreNosotros";
 
 export const router = createBrowserRouter([
   {
@@ -36,6 +37,10 @@ export const router = createBrowserRouter([
       {
         path: "/checkout",
         element: <Checkout />,
+      },
+      {
+        path: "/sobre_nosotros",
+        element: <AboutUs />,
       },
     ],
   },

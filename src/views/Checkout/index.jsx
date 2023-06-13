@@ -17,6 +17,10 @@ import {
   TextField,
 } from "@mui/material";
 import "./styles.css";
+import { pagarConCrypto, pagarConTDC } from "../../api/banco";
+import { toast } from "react-toastify";
+import NotificacionContainer from "../../components/NotificacionContainer";
+import moment from "moment/moment";
 
 const Checkout = () => {
   const location = useLocation();
@@ -29,6 +33,9 @@ const Checkout = () => {
   ];
   const [productos, setProductos] = useState();
   const [total, setTotal] = useState(0);
+  const [email, setEmail] = useState("");
+  const [CVV, setCVV] = useState("");
+
   useEffect(() => {
     const existingProducts = JSON.parse(localStorage.getItem("productsCasu"));
     setProductos(existingProducts);
@@ -38,6 +45,36 @@ const Checkout = () => {
     });
     setTotal(totalPrecio);
   }, []);
+
+  useEffect(() => {
+    setEmail("");
+    setCVV("");
+  }, [selectedValue]);
+
+  const pagar = async () => {
+    try {
+      if (email !== "" && CVV !== "" && selectedValue !== "") {
+        const fechaAct = moment().format("DD-MM-YYYY");
+        if (selectedValue === 0) {
+          const response = await pagarConTDC(email, CVV, fechaAct, total);
+          if (response.ok === true) {
+            toast.success("Transacción existosa");
+          } else {
+            toast.error(response.response.data.error);
+          }
+        } else {
+          const response = await pagarConCrypto(email, CVV, total);
+          if (response.ok === true) {
+            toast.success("Transacción existosa");
+          } else {
+            toast.error(response.response.data.error);
+          }
+        }
+      } else {
+        toast.error("Complete los datos para continuar");
+      }
+    } catch (error) {}
+  };
   return (
     <>
       <Paper
@@ -114,22 +151,28 @@ const Checkout = () => {
             <TextField
               fullWidth
               id="outlined-email-input"
-              label="Correo electrónico"
-              type="email"
+              label={
+                selectedValue === 0 ? "Número de tarjeta" : "Correo electrónico"
+              }
+              type={selectedValue === 0 ? "text" : "email"}
               size="small"
               variant="outlined"
-              // autoComplete="current-password"
+              required
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
             />
           </Grid>
           <Grid item md={3}>
             <TextField
               fullWidth
               id="outlined-pin-input"
-              label="Pin"
+              label={selectedValue === 0 ? "CVV" : "Pin"}
               type="password"
               size="small"
+              required
               variant="outlined"
-              // autoComplete="current-password"
+              value={CVV}
+              onChange={(e) => setCVV(e.target.value)}
             />
           </Grid>
           <Grid item md={3}>
@@ -142,14 +185,14 @@ const Checkout = () => {
               variant="outlined"
               disabled
               value={`$${total}`}
-              // autoComplete="current-password"
             />
           </Grid>
           <Grid item md={12}>
             <Button
               variant="contained"
               color="primary"
-              //   onClick={"handleAgregar"}
+              type="submit"
+              onClick={pagar}
               size="small"
             >
               Finalizar compra
@@ -170,7 +213,7 @@ const Checkout = () => {
           {productos?.length > 0 ? (
             productos.map((item) => (
               <>
-                <Grid item md={4}>
+                <Grid item md={4} key={item.id}>
                   <Stack direction="row" spacing={2} alignItems="center">
                     <Typography color="textSecondary" variant="body">
                       {item.name}
@@ -216,6 +259,7 @@ const Checkout = () => {
           </Grid>
         </Grid>
       </Grid>
+      <NotificacionContainer />
     </>
   );
 };

@@ -72,7 +72,7 @@ const Comprar = () => {
     justifyContent: "center",
   }));
 
-  const options = ["Option 1", "Option 2", "Option 3"];
+  const options = ["Cactus", "Suculentas", "Material de Jardinería"];
 
   const [anchorEl, setAnchorEl] = useState(null);
 
@@ -85,7 +85,15 @@ const Comprar = () => {
   };
 
   const handleCheckboxChange = (event) => {
-    setFilters({ ...options, [event.target.name]: event.target.checked });
+    const { name, checked } = event.target;
+    const selectedCategoriesList = checked
+      ? [...checked, name]
+      : checked.filter((category) => category !== name);
+    const newSelectedCategories = {};
+    selectedCategoriesList.forEach((category) => {
+      newSelectedCategories[category] = true;
+    });
+    setSelectedCategories(newSelectedCategories);
   };
 
   const handleCheckboxClick = (option) => (event) => {
@@ -100,10 +108,23 @@ const Comprar = () => {
     }
 
     setChecked(newChecked);
+
+    const selected = {};
+    newChecked.forEach((category) => {
+      selected[category] = true;
+    });
+    setSelectedCategories(selected);
   };
 
   const [loading, setLoading] = useState(true);
   const [productos, setProductos] = useState();
+  const [orden, setOrden] = useState("nombre_asc");
+  const [selectedCategories, setSelectedCategories] = useState({});
+  const [checked, setChecked] = useState([]);
+
+  const handleOrdenChange = (event) => {
+    setOrden(event.target.value);
+  };
 
   useEffect(() => {
     const cargarProductos = async () => {
@@ -123,6 +144,33 @@ const Comprar = () => {
     };
     cargarProductos();
   }, []);
+
+  const ordenarProductos = (productos) => {
+    if (orden === "precio_asc") {
+      productos = productos?.sort((a, b) => a.precio - b.precio);
+    } else if (orden === "precio_desc") {
+      productos = productos?.sort((a, b) => b.precio - a.precio);
+    } else if (orden === "nombre_asc") {
+      productos = productos?.sort((a, b) => a.nombre.localeCompare(b.nombre));
+    } else if (orden === "nombre_desc") {
+      productos = productos?.sort((a, b) => b.nombre.localeCompare(a.nombre));
+    }
+
+    const selectedCategoriesList = Object.keys(selectedCategories);
+    console.log(selectedCategoriesList);
+    if (selectedCategoriesList.length === 0) {
+      return productos; // si no hay categorías seleccionadas, devuelve todos los productos
+    }
+
+    return productos.filter((producto) => {
+      return selectedCategoriesList.includes(producto.categoria);
+    });
+  };
+
+  useEffect(() => {
+    console.log("sadas", selectedCategories);
+    ordenarProductos(productos);
+  }, [selectedCategories]);
 
   return (
     <>
@@ -176,9 +224,9 @@ const Comprar = () => {
                 <FormControlLabel
                   control={
                     <Checkbox
-                      // checked={options.filter3}
+                      checked={selectedCategories[option]}
                       onChange={handleCheckboxChange}
-                      name="filter3"
+                      name={option}
                     />
                   }
                   label={option}
@@ -224,7 +272,8 @@ const Comprar = () => {
             <Select
               style={{ width: 214 }}
               size="small"
-              defaultValue="precio_asc"
+              value={orden}
+              onChange={handleOrdenChange}
             >
               <MenuItem value="precio_asc">Precio (ascendente)</MenuItem>
               <MenuItem value="precio_desc">Precio (descendente)</MenuItem>
@@ -267,14 +316,14 @@ const Comprar = () => {
           </Container>
         ) : (
           <>
-            {productos.map((item) => (
+            {ordenarProductos(productos).map((item) => (
               <Grid item md={3} key={item._id}>
                 <ProductCard
                   name={item.nombre}
                   imageUrl={item.imagen}
                   price={item.precio}
                   url={currentUrl + "/" + item._id}
-                  maxCantidad = {item.cantidad}
+                  maxCantidad={item.cantidad}
                 />
               </Grid>
             ))}

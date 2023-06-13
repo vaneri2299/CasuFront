@@ -13,7 +13,7 @@ import {
   Button,
   Card,
 } from "@mui/material";
-import { Navigate, NavLink, useNavigate, useParams } from "react-router-dom";
+import { NavLink, useNavigate, useParams } from "react-router-dom";
 import NavigateNextIcon from "@mui/icons-material/NavigateNext";
 import "./styles.css";
 import { Box } from "@mui/system";
@@ -57,10 +57,12 @@ const DetalleProducto = () => {
     setProductosList(existingProducts);
     cargarProducto();
   }, []);
-
   const actualizarCantidad = (e) => {
     const newQuantity = parseInt(e.target.value);
-    if (newQuantity > producto?.cantidad) {
+    console.log(newQuantity);
+    if (isNaN(newQuantity)) {
+      setBlockCarrito(true);
+    } else if (newQuantity > producto?.cantidad) {
       setBlockCarrito(true);
       toast.error("La cantidad ingresada supera el stock disponible");
     } else if (newQuantity < 0) {
@@ -70,8 +72,6 @@ const DetalleProducto = () => {
       setBlockCarrito(false);
     }
     setCantidadProducto(newQuantity);
-    console.log("adasd");
-    console.log(cantidadProducto);
   };
 
   const addCarrito = () => {
@@ -126,11 +126,6 @@ const DetalleProducto = () => {
     });
     dispatch(setCantCarrito(total));
   }, [productosList]);
-
-  const handleFocus = (event) => {
-    const value = event.target.value.replace(/^0+/, "") || "0";
-    setCantidadProducto(Number(value));
-  };
 
   return (
     <div style={{ marginTop: "80px", marginInline: "16px" }}>
@@ -230,7 +225,6 @@ const DetalleProducto = () => {
                 min: 0,
                 pattern: "d+",
               }}
-              onFocus={handleFocus}
             />
             <Button
               variant="contained"

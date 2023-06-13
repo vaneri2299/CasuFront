@@ -24,16 +24,3 @@ export async function getProducto(id) {
     return error;
   }
 }
-
-export async function getImagen(url) {
-  try {
-    const response = await axios.post(
-      `${import.meta.env.VITE_API_URL}/producto/imagen`,
-      { url }
-    );
-    return response;
-  } catch (error) {
-    console.error(error);
-    return error;
-  }
-}
