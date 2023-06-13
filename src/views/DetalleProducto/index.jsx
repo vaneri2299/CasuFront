@@ -46,7 +46,9 @@ const DetalleProducto = () => {
     const cargarProducto = async () => {
       try {
         const id = params.id;
+        console.log("#aquiu")
         const response = await getProducto(id);
+        console.log("ajsdnsad")
         setProducto(response.data);
       } catch (error) {
         console.log(error);

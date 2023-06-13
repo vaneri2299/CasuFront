@@ -316,7 +316,7 @@ const Comprar = () => {
           </Container>
         ) : (
           <>
-            {ordenarProductos(productos).map((item) => (
+            {ordenarProductos(productos)?.map((item) => (
               <Grid item md={3} key={item._id}>
                 <ProductCard
                   name={item.nombre}

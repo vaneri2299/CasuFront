@@ -14,6 +14,7 @@ export async function getProductos() {
 }
 
 export async function getProducto(id) {
+  console.log(`${import.meta.env.VITE_API_URL}/producto/${id}`);
   try {
     const response = await axios.get(
       `${import.meta.env.VITE_API_URL}/producto/${id}`

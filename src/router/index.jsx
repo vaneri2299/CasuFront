@@ -27,7 +27,7 @@ export const router = createBrowserRouter([
         element: <Comprar />,
       },
       {
-        path: `${import.meta.env.VITE_BANCO_URL}/productos/:id`,
+        path: "/productos/:id",
         element: <DetalleProducto />,
       },
       {
