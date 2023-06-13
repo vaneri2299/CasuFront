@@ -13,6 +13,7 @@ import { useDispatch } from "react-redux";
 import { NavLink } from "react-router-dom";
 import { toast } from "react-toastify";
 import { setCantCarritoAdd, setCantCarritoRem } from "../../state/actions";
+import loadingImage from "../../assets/loading.gif";
 import NotificacionContainer from "../NotificacionContainer";
 
 const ProductCard = ({ name, price, imageUrl, url, maxCantidad }) => {
@@ -20,6 +21,7 @@ const ProductCard = ({ name, price, imageUrl, url, maxCantidad }) => {
   const [firstLoad, setFirstLoad] = useState(true);
   const [decremento, setDecremento] = useState(false);
   const [cantidad, setCantidad] = useState(0);
+  const [loading, setLoading] = useState(true);
   const maxQuantity = maxCantidad;
   const dispatch = useDispatch();
 
@@ -75,7 +77,12 @@ const ProductCard = ({ name, price, imageUrl, url, maxCantidad }) => {
             component="img"
             alt={name}
             height="140"
-            image={`${import.meta.env.VITE_API_URL}/assets/${imageUrl}`}
+            image={
+              loading
+                ? loadingImage
+                : `${import.meta.env.VITE_API_URL}/assets/${imageUrl}`
+            } 
+            onLoad={() => setLoading(false)}
             onError={(e) => {
               e.target.src = `${
                 import.meta.env.VITE_API_URL

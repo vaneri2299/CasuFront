@@ -25,6 +25,7 @@ import NotificacionContainer from "../../components/NotificacionContainer";
 import { toast } from "react-toastify";
 import { useDispatch, useSelector } from "react-redux";
 import { setCantCarrito } from "../../state/actions";
+import loadingImage from "../../assets/loading.gif";
 
 const DetalleProducto = () => {
   const params = useParams();
@@ -37,6 +38,7 @@ const DetalleProducto = () => {
   const [cantidadProducto, setCantidadProducto] = useState(0);
   const [value, setValue] = useState("1");
   const [blockCarrito, setBlockCarrito] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
@@ -46,9 +48,9 @@ const DetalleProducto = () => {
     const cargarProducto = async () => {
       try {
         const id = params.id;
-        console.log("#aquiu")
+        console.log("#aquiu");
         const response = await getProducto(id);
-        console.log("ajsdnsad")
+        console.log("ajsdnsad");
         setProducto(response.data);
       } catch (error) {
         console.log(error);
@@ -152,9 +154,12 @@ const DetalleProducto = () => {
             <CardMedia
               component="img"
               height="400"
-              image={`${import.meta.env.VITE_API_URL}/assets/${
-                producto?.imagen
-              }`}
+              image={
+                loading
+                  ? loadingImage
+                  : `${import.meta.env.VITE_API_URL}/assets/${producto?.imagen}`
+              }
+              onLoad={() => setLoading(false)}
               onError={(e) => {
                 e.target.src = `${
                   import.meta.env.VITE_API_URL
