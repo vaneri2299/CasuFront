@@ -10,11 +10,9 @@ import {
 import { useEffect, useState } from "react";
 import { Button } from "react-bootstrap";
 import { useDispatch } from "react-redux";
+import { NavLink } from "react-router-dom";
 import { toast } from "react-toastify";
-import {
-  setCantCarritoAdd,
-  setCantCarritoRem,
-} from "../../state/actions";
+import { setCantCarritoAdd, setCantCarritoRem } from "../../state/actions";
 import NotificacionContainer from "../NotificacionContainer";
 
 const ProductCard = ({ name, price, imageUrl, url, maxCantidad }) => {
@@ -72,7 +70,7 @@ const ProductCard = ({ name, price, imageUrl, url, maxCantidad }) => {
   return (
     <>
       <Card variant="outlined" sx={{ border: "none", textAlign: "center" }}>
-        <CardActionArea href={url}>
+        <CardActionArea component={NavLink} to={url}>
           <CardMedia
             component="img"
             alt={name}
