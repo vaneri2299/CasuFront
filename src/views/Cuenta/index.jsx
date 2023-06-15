@@ -378,7 +378,9 @@ const Cuenta = () => {
                     Se utilizarán sus datos personales para respaldar su
                     experiencia en todo este sitio web, para administrar el
                     acceso a su cuenta y para otros fines descritos en nuestra{" "}
-                    <Link>política de privacidad</Link>
+                    <Link component={NavLink} to="/politica_privacidad">
+                      política de privacidad
+                    </Link>
                   </FormHelperText>
                 )}
                 {formSubmitted && formik.errors.email && (
