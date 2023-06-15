@@ -25,7 +25,6 @@ function Reportes() {
   const [informeSeleccionado, setInformeSeleccionado] = useState("");
   const [tipoFecha, setTipoFecha] = useState("");
   const [tipoFijo, setTipoFijo] = useState("");
-  const classes = useStyles();
   const [fechaInicio, setFechaInicio] = useState(moment());
   const [fechaFin, setFechaFin] = useState(moment());
   const [periodoFijo, setPeriodoFIjo] = useState(moment().format("YYYY"));
@@ -54,11 +53,11 @@ function Reportes() {
 
 
   return (
-    <div className={classes.root}>
+    <div>
       <Typography variant="h4" align="center" sx={{ mt: 15, mb: 3 }}>
         Reportes
       </Typography>
-      <Grid container spacing={2} sx={{ pr: 3, pl: 3 }}>
+      <Grid container spacing={2} sx={{ pr: 3, pl: 3, mb:15 }}>
         <Grid item xs={12} md={4}>
           <FormControl fullWidth>
             <InputLabel id="informe-selector-label">
