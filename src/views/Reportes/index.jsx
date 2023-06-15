@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import { makeStyles } from "@mui/styles";
 import {
   Grid,
   Paper,
@@ -10,6 +9,7 @@ import {
   MenuItem,
   FormControl,
   OutlinedInput,
+  makeStyles,
 } from "@mui/material";
 import ReporteClientes from "./ReporteClientes";
 // import ReporteCategorias from './ReporteCategorias';
