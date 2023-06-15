@@ -9,8 +9,8 @@ import {
   MenuItem,
   FormControl,
   OutlinedInput,
-  makeStyles,
 } from "@mui/material";
+import { makeStyles } from '@mui/styles';
 import ReporteClientes from "./ReporteClientes";
 // import ReporteCategorias from './ReporteCategorias';
 // import ReporteProductos from './ReporteProductos';
@@ -20,21 +20,6 @@ import { PDFDownloadLink } from "@react-pdf/renderer";
 import InformePDF from "./InformePDF";
 import moment from "moment";
 
-const useStyles = makeStyles((theme) => ({
-  root: {
-    flexGrow: 1,
-    padding: 2,
-  },
-  paper: {
-    padding: 2,
-    textAlign: "center",
-    color: "secondary",
-    marginBottom: 2,
-  },
-  button: {
-    margin: 1,
-  },
-}));
 
 function Reportes() {
   const [informeSeleccionado, setInformeSeleccionado] = useState("");
