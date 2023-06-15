@@ -103,7 +103,7 @@ const ProductCard = ({ name, price, imageUrl, url, maxCantidad }) => {
           </CardContent>
         </CardActionArea>
         <CardActions style={{ justifyContent: "space-around" }}>
-          <Button size="small" component={NavLink} to={url}>
+          <Button size="small" as={NavLink} to={url}>
             Ver más
           </Button>
           <ButtonGroup>
