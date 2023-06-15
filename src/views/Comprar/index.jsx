@@ -72,7 +72,7 @@ const Comprar = () => {
     justifyContent: "center",
   }));
 
-  const options = ["Cactus", "Suculentas", "Material de Jardinería"];
+  const options = ["Cactus", "Suculentas", "Material de jardinería"];
 
   const [anchorEl, setAnchorEl] = useState(null);
 

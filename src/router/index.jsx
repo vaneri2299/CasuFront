@@ -10,6 +10,7 @@ import store from '../state/store';
 import AboutUs from "../views/SobreNosotros";
 import Reportes from "../views/Reportes";
 import PrivacyPolicy from "../views/Politica";
+import PaymentMethods from "../views/Pagos";
 
 export const router = createBrowserRouter([
   {
@@ -51,6 +52,10 @@ export const router = createBrowserRouter([
       {
         path: "/politica_privacidad",
         element: <PrivacyPolicy/>,
+      },
+      {
+        path: "/metodos_pago",
+        element: <PaymentMethods/>,
       },
     ],
   },
