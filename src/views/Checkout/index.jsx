@@ -64,6 +64,10 @@ const Checkout = () => {
           const response = await pagarConTDC(email, CVV, fechaF, total);
           if (response.ok === true) {
             toast.success("Transacción existosa");
+            localStorage.removeItem("productsCasu");
+            setEmail("");
+            setCVV("");
+            setProductos([]);
           } else {
             toast.error(response.response.data.error);
           }
@@ -71,6 +75,10 @@ const Checkout = () => {
           const response = await pagarConCrypto(email, CVV, total);
           if (response.ok === true) {
             toast.success("Transacción existosa");
+            localStorage.removeItem("productsCasu");
+            setEmail("");
+            setCVV("");
+            setProductos([]);
           } else {
             toast.error(response.response.data.error);
           }
