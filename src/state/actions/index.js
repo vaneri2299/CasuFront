@@ -8,6 +8,11 @@ export const setAuthToken = (payload) => ({
   payload,
 });
 
+export const setAdmin = (payload) => ({
+  type: "SET_ADMIN",
+  payload,
+});
+
 export const setUserData = (payload) => ({
   type: "SET_USERDATA",
   payload,

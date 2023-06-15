@@ -92,15 +92,16 @@ export default function PrimarySearchAppBar() {
     setAnchorEl(null);
     handleMobileMenuClose();
   };
-  
+
   const handleMobileMenuOpen = (event) => {
     setMobileMoreAnchorEl(event.currentTarget);
   };
-  
+
   const cerrarSesion = () => {
-    localStorage.removeItem('casuToken');
+    localStorage.removeItem("casuToken");
+    localStorage.removeItem("productsCasu");
     location.reload();
-  }
+  };
 
   const menuId = "primary-search-account-menu";
   const renderMenu = (
@@ -183,11 +184,13 @@ export default function PrimarySearchAppBar() {
 
   const dispatch = useDispatch();
   const isLoged = useSelector((state) => state.isLoged);
+  const admin = useSelector((state) => state.admin);
   const cantCarrito = useSelector((state) => state.cantCarrito);
 
   useEffect(() => {
     let total = 0;
-    const existingProducts = JSON.parse(localStorage.getItem("productsCasu")) || [];
+    const existingProducts =
+      JSON.parse(localStorage.getItem("productsCasu")) || [];
     existingProducts.forEach((producto) => {
       total += producto["quantity"];
     });
@@ -225,19 +228,37 @@ export default function PrimarySearchAppBar() {
             </Typography>
             <Box sx={{ flexGrow: 1, display: { xs: "none", md: "flex" } }}>
               {pages.map((page, index) => (
-                <Button
-                  key={page}
-                  component={NavLink}
-                  to={rutas[index]}
-                  sx={{
-                    my: 2,
-                    color: "black",
-                    display: "block",
-                    fontWeight: "bold",
-                  }}
-                >
-                  {page}
-                </Button>
+                <>
+                  {admin !== true || page !== "Sobre nosotros" ? (
+                    <Button
+                      key={page}
+                      component={NavLink}
+                      to={rutas[index]}
+                      sx={{
+                        my: 2,
+                        color: "black",
+                        display: "block",
+                        fontWeight: "bold",
+                      }}
+                    >
+                      {page}
+                    </Button>
+                  ) : admin === true ? (
+                    <Button
+                      key={"reportes"}
+                      component={NavLink}
+                      to={"/reportes"}
+                      sx={{
+                        my: 2,
+                        color: "black",
+                        display: "block",
+                        fontWeight: "bold",
+                      }}
+                    >
+                      Reportes
+                    </Button>
+                  ) : null}
+                </>
               ))}
             </Box>
             <Menu
@@ -275,17 +296,26 @@ export default function PrimarySearchAppBar() {
             </Search>
             <Box sx={{ flexGrow: 1 }} />
             {isLoged ? (
-              <Box sx={{ display: { xs: "none", md: "flex" } }}>
-                <IconButton
-                  size="large"
-                  aria-label="show 4 new mails"
-                  color="inherit"
-                  onClick={openModalCarrito}
-                >
-                  <Badge badgeContent={cantCarrito || null} color="error">
-                    <ShoppingCartOutlinedIcon />
-                  </Badge>
-                </IconButton>
+              <Box
+                sx={{
+                  display: { xs: "none", md: "flex", alignItems: "center" },
+                }}
+              >
+                {admin !== true ? (
+                  <IconButton
+                    size="large"
+                    aria-label="show 4 new mails"
+                    color="inherit"
+                    onClick={openModalCarrito}
+                  >
+                    <Badge badgeContent={cantCarrito || null} color="error">
+                      <ShoppingCartOutlinedIcon />
+                    </Badge>
+                  </IconButton>
+                ) : (
+                  <Typography variant="h6">Versión Administrador</Typography>
+                )}
+
                 <IconButton
                   size="large"
                   edge="end"

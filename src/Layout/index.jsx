@@ -11,10 +11,14 @@ const Layout = () => {
   const dispatch = useDispatch();
   const checkToken = async () => {
     const userToken = localStorage.getItem("casuToken");
+    const userAdmin = localStorage.getItem("casuAdmin");
     if (userToken) {
       dispatch(setIsLoged(true));
-    }else{
-      toast.success("Inicia sesión nuevamente")
+      if (userAdmin === true) {
+        dispatch(setIsAdmin(true));
+      }
+    } else {
+      toast.success("Inicia sesión nuevamente");
     }
   };
 

@@ -23,7 +23,7 @@ const AboutUs = () => {
 
   return (
     <>
-      <Typography variant="h4" align="center" sx={{ my: 4 }}>
+      <Typography variant="h4" align="center" sx={{ mt: 15 }}>
         Acerca de nosotros
       </Typography>
       <Section container spacing={4}>

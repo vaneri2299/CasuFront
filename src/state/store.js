@@ -1,11 +1,12 @@
-import { createStore } from 'redux';
-import reducer from './reducers';
+import { createStore } from "redux";
+import reducer from "./reducers";
 
 const initialState = {
   isLoged: false,
-  authToken: '',
+  authToken: "",
+  admin: false,
   userData: {},
-  cantCarrito: 0
+  cantCarrito: 0,
 };
 
 const store = createStore(

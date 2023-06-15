@@ -1,9 +1,5 @@
 import React, { useState } from "react";
-import {
-  NavLink,
-  useLocation,
-  useNavigate,
-} from "react-router-dom";
+import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import banner from "../../assets/cuenta.jpg";
@@ -39,7 +35,7 @@ import NotificacionContainer from "../../components/NotificacionContainer";
 import { toast } from "react-toastify";
 import bcrypt from "bcryptjs";
 import { useDispatch } from "react-redux";
-import { setAuthToken, setIsLoged } from "../../state/actions";
+import { setAdmin, setAuthToken, setIsLoged } from "../../state/actions";
 
 const Cuenta = () => {
   const dispatch = useDispatch();
@@ -210,15 +206,22 @@ const Cuenta = () => {
   };
 
   const iniciarSesion = async () => {
+    if (emailI === "" || passwordI === "") {
+      toast.error("Complete los datos para continuar");
+      return;
+    }
     setIsLoading2(true);
     try {
       const response = await userHash(emailI, passwordI);
       if (response.s === 1) {
         toast.success(response.mensaje);
-        const token = response.data;
+        const token = response.data.token;
+        console.log(response.data.isAdmin);
         dispatch(setIsLoged(true));
         dispatch(setAuthToken(token));
+        dispatch(setAdmin(response.data.isAdmin));
         localStorage.setItem("casuToken", token);
+        localStorage.setItem("casuAdmin", response.data.isAdmin);
         setEmailI("");
         setPasswordI("");
         setTimeout(() => {
@@ -280,6 +283,7 @@ const Cuenta = () => {
                 name="emailI"
                 type="email"
                 value={emailI}
+                autoComplete
                 onChange={(e) => setEmailI(e.target.value)}
                 endAdornment={
                   <InputAdornment position="end">

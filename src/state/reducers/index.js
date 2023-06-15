@@ -10,6 +10,11 @@ const reducer = (state, { type, payload }) => {
         ...state,
         authToken: payload,
       };
+      case "SET_ADMIN":
+        return {
+          ...state,
+          admin: payload,
+        };
 
     case "SET_USERDATA":
       return {
